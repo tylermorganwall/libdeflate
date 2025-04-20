@@ -74,8 +74,8 @@ dnl Create build directory for OpenEXR
 mkdir -p src/libdeflate/build
 
 dnl Get the absolute path to the source directory
-PACKAGE_BASE_DIR=`cd "$(dirname "$0")" && pwd`
-AC_SUBST([PACKAGE_BASE_DIR])
+PACKAGE_ABSOLUTE_BASE_DIR=`cd "$(dirname "$0")" && pwd`
+AC_SUBST([PACKAGE_ABSOLUTE_BASE_DIR])
 
 dnl Create a clean environment for CMake
 dnl This is critical for macOS where architecture flags can conflict
@@ -97,16 +97,18 @@ set(CMAKE_OSX_ARCHITECTURES "${TARGET_ARCH}" CACHE STRING "Target architecture")
 EOF
 
 dnl Configure and build OpenEXR
-mkdir -p ${PACKAGE_BASE_DIR}/inst
+mkdir -p inst
 cd src/libdeflate/build
 "${CMAKE}" ".." \
 -C "../build/initial-cache.cmake" \
--DCMAKE_INSTALL_PREFIX="${PACKAGE_BASE_DIR}/inst/lib/${TARGET_ARCH}" \
+-DCMAKE_INSTALL_PREFIX="../../../inst" \
+-DCMAKE_INSTALL_LIBDIR="lib/${TARGET_ARCH}" \
+-DCMAKE_INSTALL_INCLUDEDIR="include"       \
 -DLIBDEFLATE_BUILD_SHARED_LIB=OFF \
 -DLIBDEFLATE_BUILD_GZIP=OFF \
 -DCMAKE_BUILD_TYPE=Release \
 -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-cd "${PACKAGE_BASE_DIR}"
+cd "${PACKAGE_ABSOLUTE_BASE_DIR}"
 
 dnl Substitute variables in Makevars
 AC_SUBST([CMAKE])

@@ -1,6 +1,6 @@
 Package: libdeflate
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Provides the DEFLATE library and headers
 Version: 0.1.0
 Authors@R: c(
     person(
@@ -9,9 +9,9 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
-License: What license is it under?
+Description: Provides the DEFLATE library and headers
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Config/build/compilation-database: true
+RoxygenNote: 7.3.2

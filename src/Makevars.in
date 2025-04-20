@@ -2,14 +2,14 @@
 CMAKE = @CMAKE@
 
 # Directories
-LIBDEFLATE_DIR = @PACKAGE_BASE_DIR@
+LIBDEFLATE_DIR = @PACKAGE_ABSOLUTE_BASE_DIR@
 INST_DIR = $(LIBDEFLATE_DIR)/inst
 LIB_DIR = $(INST_DIR)/lib/@TARGET_ARCH@/
 INCLUDE_DIR = $(INST_DIR)/include
 LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
 
 # Set include paths
-PKG_CPPFLAGS = -I$(INCLUDE_DIR) -I$(INCLUDE_DIR)/libdeflate
+PKG_CPPFLAGS = -I$(INCLUDE_DIR)
 
 PKG_LIBS = -L$(LIB_DIR) -ldeflate
 
@@ -23,12 +23,12 @@ all: $(SHLIB)
 $(SHLIB): $(LIBDEFLATE_LIB)
 
 $(LIBDEFLATE_LIB):
-	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && @CMAKE@ --build . --config Release
-	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && @CMAKE@ --install . --config Release
-	mkdir -p @PACKAGE_BASE_DIR@/inst/lib
-	mkdir -p @PACKAGE_BASE_DIR@/inst/include/libdeflate
-	cp @PACKAGE_BASE_DIR@/inst/lib/@TARGET_ARCH@/include/*.h @PACKAGE_BASE_DIR@/inst/include/libdeflate/ 
-	cp @PACKAGE_BASE_DIR@/inst/lib/@TARGET_ARCH@/lib/*.a $(LIB_DIR)/ 
-	-rm -rf @PACKAGE_BASE_DIR@/inst/lib/@TARGET_ARCH@/lib
-	-rm -rf @PACKAGE_BASE_DIR@/inst/lib/@TARGET_ARCH@/bin
-	-rm -rf @PACKAGE_BASE_DIR@/src/libdeflate/build
+	cd @PACKAGE_ABSOLUTE_BASE_DIR@/src/libdeflate/build && \
+	@CMAKE@ --build . --config Release && \
+	@CMAKE@ --install . --config Release && \
+	cd @PACKAGE_ABSOLUTE_BASE_DIR@ && \
+	"$(R_HOME)/bin/Rscript" tools/fix-targets.R \
+	  inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
+
+clean: 
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/src/libdeflate/build 

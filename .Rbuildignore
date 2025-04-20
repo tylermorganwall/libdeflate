@@ -2,3 +2,13 @@
 ^\.Rproj\.user$
 ^compile_commands\.json$
 ^\.cache$
+^compile_commands\.json$
+^\\.cache$
+^LICENSE\.md$
+^src/Makevars$
+^src/libdeflate/build$
+^src/libdeflate/\..+$
+^src/libdeflate/.+\.md$
+^src/libdeflate/programs$
+^src/libdeflate/scripts$
+^inst$
