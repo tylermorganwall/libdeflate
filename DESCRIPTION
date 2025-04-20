@@ -1,17 +1,26 @@
 Package: libdeflate
 Type: Package
-Title: Provides the DEFLATE library and headers
-Version: 0.1.0
-Authors@R: c(
-    person(
-      "Jane", "Doe",
-      email = "jane@example.com",
-      role = c("aut", "cre")
+Title: Static Library and Headers for 'DEFLATE' Compression
+Version: 1.23.0
+Authors@R: 
+    c(
+      person(
+        "Tyler", "Morgan-Wall",
+        email = "tylermw@gmail.com",
+        role = c("aut", "cre")
+      ),
+      person(
+        "Eric", "Biggers",
+        role = c("aut", "cph")
+      ),
+      person("Google LLC", role = "cph")
     )
-  )
-Description: Provides the DEFLATE library and headers
+Description: Provides the libdeflate static library and C headers for 
+    fast, whole-buffer DEFLATE-based compression and decompression.
+Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Config/build/compilation-database: true
+SystemRequirements: CMake
 RoxygenNote: 7.3.2
+Config/build/compilation-database: true

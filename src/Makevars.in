@@ -9,7 +9,8 @@ INCLUDE_DIR = $(INST_DIR)/include
 LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
 
 # Set include paths
-PKG_CPPFLAGS = -I$(INCLUDE_DIR)
+PKG_CPPFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
+PKG_CFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
 
 PKG_LIBS = -L$(LIB_DIR) -ldeflate
 
@@ -31,4 +32,10 @@ $(LIBDEFLATE_LIB):
 	  inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
 
 clean: 
-	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/src/libdeflate/build 
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/src/libdeflate/build && \
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/src/Makevars && \
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/src/Makevars.win && \
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/config.log && \
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/config.status && \
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/autom4te.cache && \
+	rm -rf @PACKAGE_ABSOLUTE_BASE_DIR@/configure~
