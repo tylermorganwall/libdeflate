@@ -4,3 +4,10 @@
 .Ruserdata
 compile_commands.json
 .cache
+config.log
+config.status
+^configure$
+inst
+src/*.so
+src/*.o
+src/Makevars
