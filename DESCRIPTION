@@ -24,3 +24,4 @@ LazyData: true
 SystemRequirements: CMake
 RoxygenNote: 7.3.2
 Config/build/compilation-database: true
+Biarch: TRUE

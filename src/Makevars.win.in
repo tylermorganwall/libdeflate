@@ -19,9 +19,9 @@ CFLAGS = $(CFLAGS) $(CPICFLAGS)
 CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
 
 # Main target
-all: $(OBJECTS)
+all: $(SHLIB)
 
-$(OBJECTS): $(LIBDEFLATE_LIB)
+$(SHLIB): $(LIBDEFLATE_LIB)
 
 $(LIBDEFLATE_LIB):
 	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && \

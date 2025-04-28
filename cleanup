@@ -1,10 +1,3 @@
-#!/bin/sh
-
-# Clean up all build artifacts
-rm -rf src/Makevars
-rm -rf src/Makevars.win
-rm -rf config.log
-rm -rf config.status
-rm -rf autom4te.cache
-rm -rf configure~
-rm -rf src/libdeflate/build
+#!/usr/bin/env sh
+: "${R_HOME=`R RHOME`}"
+"${R_HOME}/bin/Rscript" tools/config.R cleanup "$@"
