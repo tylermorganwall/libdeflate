@@ -7,7 +7,9 @@
 ^LICENSE\.md$
 ^src/Makevars$
 ^src/Makevars.win$
-^src/libdeflate(/|$)
+^src/libdeflate/build(/|$)
+^src/libdeflate/scripts(/|$)
+^src/libdeflate/progams(/|$)
 ^inst/lib$
 ^README\.Rmd$
 ^\.github$
