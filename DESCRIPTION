@@ -26,7 +26,7 @@ Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-SystemRequirements: CMake
+SystemRequirements: GNU make, CMake
 RoxygenNote: 7.3.2
 Config/build/compilation-database: true
 Biarch: TRUE
