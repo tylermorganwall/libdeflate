@@ -94,3 +94,9 @@ if (!is_windows) {
 } else {
   configure_file("src/Makevars.win.in")
 }
+
+if (!is_windows) {
+  unlink("src/Makevars.win")
+} else {
+  unlink("src/Makevars")
+}
