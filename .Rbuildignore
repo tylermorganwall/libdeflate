@@ -12,3 +12,5 @@
 ^src/libdeflate/programs$
 ^src/libdeflate/scripts$
 ^inst/lib$
+^README\.Rmd$
+^\.github$

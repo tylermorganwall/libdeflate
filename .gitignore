@@ -11,3 +11,5 @@ inst
 src/*.so
 src/*.o
 src/Makevars
+
+/.quarto/
