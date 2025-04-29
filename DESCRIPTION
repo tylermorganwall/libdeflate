@@ -15,8 +15,8 @@ Authors@R:
       ),
       person("Google LLC", role = "cph")
     )
-Description: Provides the libdeflate static library and C headers for 
-    fast, whole-buffer DEFLATE-based compression and decompression.
+Description: Provides the 'libdeflate' static library and C headers for 
+    whole-buffer 'DEFLATE'-based compression and decompression.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
