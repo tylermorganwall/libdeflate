@@ -7,13 +7,18 @@ Authors@R:
       person(
         "Tyler", "Morgan-Wall",
         email = "tylermw@gmail.com",
-        role = c("aut", "cre")
+        role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0002-3131-3814")
       ),
       person(
         "Eric", "Biggers",
         role = c("aut", "cph")
       ),
-      person("Google LLC", role = "cph")
+      person("Google LLC", role = "cph"),
+      person(
+        "Kevin", "Ushey",
+        role = c("cph")
+      )
     )
 Description: Provides the 'libdeflate' static library and C headers for 
     whole-buffer 'DEFLATE'-based compression and decompression.
