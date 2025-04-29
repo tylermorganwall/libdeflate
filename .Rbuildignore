@@ -6,10 +6,8 @@
 ^\\.cache$
 ^LICENSE\.md$
 ^src/Makevars$
-src/libdeflate/build
-^src/libdeflate/.+\.md$
-^src/libdeflate/programs$
-^src/libdeflate/scripts$
+^src/Makevars.win$
+^src/libdeflate(/|$)
 ^inst/lib$
 ^README\.Rmd$
 ^\.github$

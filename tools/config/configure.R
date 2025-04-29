@@ -87,5 +87,10 @@ if (status != 0) stop("CMake configure step failed")
 
 setwd(PACKAGE_BASE_DIR)
 
-configure_file("src/Makevars.in")
-configure_file("src/Makevars.win.in")
+is_windows = identical(.Platform$OS.type, "windows")
+
+if (!is_windows) {
+  configure_file("src/Makevars.in")
+} else {
+  configure_file("src/Makevars.win.in")
+}
