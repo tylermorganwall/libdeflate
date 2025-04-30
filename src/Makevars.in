@@ -30,7 +30,6 @@ $(LIBDEFLATE_LIB):
 	cd @PACKAGE_BASE_DIR@ && \
 	"$(R_HOME)/bin/Rscript" tools/fix-line-endings.R src/Makevars \
 		src/libdeflate/build/Makefile \
-		src/libdeflate/build/CMakeFiles/3.30.4/CompilerIdC/CMakeCCompilerId.c && \
 	"$(R_HOME)/bin/Rscript" tools/fix-targets.R \
 	  inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
 
