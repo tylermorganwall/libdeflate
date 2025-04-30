@@ -30,4 +30,4 @@ LazyData: true
 SystemRequirements: GNU make, CMake
 RoxygenNote: 7.3.2
 Config/build/compilation-database: true
-Biarch: TRUE
+BugReports: https://github.com/tylermorganwall/libdeflate
