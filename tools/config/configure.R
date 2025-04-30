@@ -89,14 +89,15 @@ setwd(PACKAGE_BASE_DIR)
 
 is_windows = identical(.Platform$OS.type, "windows")
 
-if (!is_windows) {
-  configure_file("src/Makevars.in")
-} else {
-  configure_file("src/Makevars.win.in")
+lf_ify <- function(path) {
+  if (!file.exists(path)) return(invisible())
+  txt <- readLines(path, warn = FALSE) # strips CR automatically
+  writeLines(txt, path, sep = "\n", useBytes = TRUE)
 }
 
-if (!is_windows) {
-  unlink("src/Makevars.win")
-} else {
-  unlink("src/Makevars")
-}
+
+configure_file("src/Makevars.in")
+configure_file("src/Makevars.win.in")
+
+lf_ify("src/Makevars")
+lf_ify("src/Makevars.win")
