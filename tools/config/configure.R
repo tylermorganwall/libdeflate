@@ -95,9 +95,11 @@ lf_ify <- function(path) {
   writeLines(txt, path, sep = "\n", useBytes = TRUE)
 }
 
-
-configure_file("src/Makevars.in")
-configure_file("src/Makevars.win.in")
+if (!is_windows) {
+  configure_file("src/Makevars.in")
+} else {
+  configure_file("src/Makevars.win.in")
+}
 
 lf_ify("src/Makevars")
 lf_ify("src/Makevars.win")

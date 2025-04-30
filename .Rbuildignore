@@ -7,9 +7,9 @@
 ^LICENSE\.md$
 ^src/Makevars$
 ^src/Makevars.win$
-src/libdeflate/build
-src/libdeflate/scripts
-src/libdeflate/progams
+src/libdeflate/build/.+
+src/libdeflate/scripts/.+
+src/libdeflate/progams/.+
 src/libdeflate/\..+
 ^inst/lib$
 ^README\.Rmd$
