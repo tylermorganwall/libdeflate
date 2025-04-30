@@ -28,6 +28,8 @@ $(LIBDEFLATE_LIB):
 	@CMAKE@ --build . --config Release && \
 	@CMAKE@ --install . --config Release && \
 	cd @PACKAGE_BASE_DIR@ && \
+	"$(R_HOME)/bin/Rscript" src/Makevars && \
+	"$(R_HOME)/bin/Rscript" src/libdeflate/build/Makefile && \
 	"$(R_HOME)/bin/Rscript" tools/fix-targets.R \
 	  inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
 
