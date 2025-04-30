@@ -20,9 +20,10 @@ Authors@R:
         role = c("cph")
       )
     )
-Description: Provides the 'libdeflate' static library and C headers for 
+Description: Provides the 'libdeflate' static library 
+    (see <https://github.com/ebiggers/libdeflate>) and C headers for 
     whole-buffer 'DEFLATE'-based compression and decompression, along with
-    an R interface to the library.
+    an R interface for compressing and decompressing raw vectors.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
