@@ -1,6 +1,6 @@
 Package: libdeflate
 Type: Package
-Title: 'DEFLATE' Compression Static Library and Headers
+Title: DEFLATE Compression Static Library and Headers
 Version: 1.23.0
 Authors@R: 
     c(
@@ -21,8 +21,8 @@ Authors@R:
       )
     )
 Description: Provides the 'libdeflate' static library 
-    (see <https://github.com/ebiggers/libdeflate>) and C headers for 
-    whole-buffer 'DEFLATE'-based compression and decompression, along with
+    (see <https://github.com/ebiggers/libdeflate>) and 'C' headers for 
+    whole-buffer DEFLATE-based compression and decompression, along with
     an R interface for compressing and decompressing raw vectors.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
