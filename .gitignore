@@ -16,5 +16,3 @@ src/libdeflate/.github
 src/libdeflate/programs
 src/libdeflate/scripts
 .cirrus.yml
-NEWS.md
-README.md
