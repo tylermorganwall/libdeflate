@@ -68,7 +68,7 @@ set(CMAKE_OSX_ARCHITECTURES "%s" CACHE STRING "Target architecture")}-",
 )
 
 
-inst_dir <- file.path(PACKAGE_BASE_DIR, "inst") # ${PACKAGE_BASE_DIR}/inst
+inst_dir = file.path(PACKAGE_BASE_DIR, "inst") # ${PACKAGE_BASE_DIR}/inst
 dir.create(inst_dir, recursive = TRUE, showWarnings = FALSE)
 
 include_dir = file.path(inst_dir, "include")
@@ -85,10 +85,10 @@ if (!dir.exists(lib_arch)) {
   dir.create(lib_arch)
 }
 
-build_dir <- file.path(PACKAGE_BASE_DIR, "src/libdeflate/build") # already created earlier
-src_dir <- ".." # evaluated inside build/
+build_dir = file.path(PACKAGE_BASE_DIR, "src/libdeflate/build") # already created earlier
+src_dir = ".." # evaluated inside build/
 
-cmake_cfg <- c(
+cmake_cfg = c(
   src_dir,
   "-C",
   "../build/initial-cache.cmake",
@@ -103,14 +103,14 @@ cmake_cfg <- c(
 
 setwd(build_dir)
 
-status <- system2(CMAKE, cmake_cfg)
+status = system2(CMAKE, cmake_cfg)
 if (status != 0) stop("CMake configure step failed")
 
 setwd(PACKAGE_BASE_DIR)
 
-lf_ify <- function(path) {
+lf_ify = function(path) {
   if (!file.exists(path)) return(invisible())
-  txt <- readLines(path, warn = FALSE) # strips CR automatically
+  txt = readLines(path, warn = FALSE) # strips CR automatically
   writeLines(txt, path, sep = "\n", useBytes = TRUE)
 }
 
