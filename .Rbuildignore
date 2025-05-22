@@ -14,3 +14,4 @@ src/libdeflate/\..+
 ^inst/lib$
 ^README\.Rmd$
 ^\.github$
+^cran-comments\.md$

@@ -4,12 +4,32 @@
 is_windows = identical(.Platform$OS.type, "windows")
 is_macos = identical(Sys.info()[['sysname']], "Darwin")
 
+CC_RAW = r_cmd_config("CC")
+CXX_RAW = r_cmd_config("CXX")
+
+CC_ARGS = strsplit(CC_RAW, " ")[[1]]
+CXX_ARGS = strsplit(CXX_RAW, " ")[[1]]
+
+uses_ccache = FALSE
+if (grepl(CC_ARGS[1], "ccache")) {
+  uses_ccache = TRUE
+  CC = paste(CC_ARGS[-1], collapse = " ")
+}
+
+if (grepl(CXX_ARGS[1], "ccache")) {
+  uses_ccache = TRUE
+  CXX = paste(CXX_ARGS[-1], collapse = " ")
+}
+
+CC_COMPILER = strsplit(CC, " ")[[1]][1]
+CXX_COMPILER = strsplit(CXX, " ")[[1]][1]
+
 CC_FULL = normalizePath(
-  Sys.which(strsplit(r_cmd_config("CC"), " ")[[1]][1]),
+  Sys.which(CC_COMPILER),
   winslash = "/"
 )
 CXX_FULL = normalizePath(
-  Sys.which(strsplit(r_cmd_config("CXX"), " ")[[1]][1]),
+  Sys.which(CXX_COMPILER),
   winslash = "/"
 )
 TARGET_ARCH = Sys.info()[["machine"]]
