@@ -21,15 +21,14 @@ Authors@R:
       )
     )
 Description: Whole-buffer DEFLATE-based compression and 
-    decompression of raw vectors. If not already installed,
-    provides both the 'libdeflate' static library 
-    (see <https://github.com/ebiggers/libdeflate>) and 'C' headers.
-    Also provides a 'CMake' target to ease the static linking
-    of 'libdeflate' in other packages.
-    Compared to base R's 'memCompress()' implementation of DEFLATE compression, 
-    this R interface provides the user with additional 
-    control over the trade-off between speed and quality of 
-    compression.
+    decompression of raw vectors using the 'libdeflate' library 
+    (see <https://github.com/ebiggers/libdeflate>). Provides the user with additional 
+    control over the trade-off between speed and the quality of 
+    compression compared to base R's use of DEFLATE compression in 
+    'memCompress()'. Also provides the 'libdeflate' static library and 
+    'C' headers along with a 'CMake' target and 'package‑config' file that 
+    ease static linking of 'libdeflate' in packages that compile 
+    libraries using 'CMake'.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
