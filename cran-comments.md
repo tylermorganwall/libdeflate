@@ -1,6 +1,6 @@
-## CHECK PASSED
+## CHECK Results
 
-This has been checked on macOS --as-cran, all 30 rhub runners, win-builder, and mac-builder with no notes, warnings, or errors.
+This has been successfully checked on macOS --as-cran, all 30 rhub runners, win-builder (old/release/dev), and mac-builder (release/dev).
 
 # Response to BDR comments:
 
@@ -14,9 +14,9 @@ There is no acknowledgement of 'prior art'.
 
 ### Response 1
 
-To clarify the purpose of the package, the DESCRIPTION 'Description' field has been updated to note the differences between this interface to libdeflate's DEFLATE compression as compared to base R's 'memCompress()' interface (which fixes the DEFLATE compression level at 6, out of a range of 0-12), state that 'libdeflate' will link the system library if found when building the package, and note that it also provides a 'CMake' target to ease linking of downstream packages that wish to statically link 'libdeflate' to compilation units in their package source that build and link bundled static libraries using 'CMake'.
+To clarify the purpose of the package, the DESCRIPTION 'Description' field has been updated to note the differences between this interface to libdeflate's DEFLATE compression as compared to base R's 'memCompress()' interface (which fixes the compression level at the default value of 6, out of a range of 0-12), state that 'libdeflate' will link the system library if found when building the package, and note that it also provides a 'CMake' target to ease linking of downstream packages that wish to statically link 'libdeflate' to compilation units in their package source that link bundled static libraries using 'CMake'.
 
-Additionally, a \seealso{} field was added to the R interface documentation to state the difference between the existing implementation of DEFLATE compression provided by base R and this implementation.
+Additionally, a \seealso{} field was added to the package documentation to state the difference between the existing implementation of DEFLATE compression provided by base R and this implementation.
 
 ## Comment 2
 
@@ -29,7 +29,7 @@ so is of a suitable version."
 
 ### Response 2
 
-The configure script has been updated to link the system libdeflate if found (either using pkg-config, or via common installation locations) and it is of a suitable version.
+The configure script has been updated to link the system libdeflate if found (either using pkg-config, or via common installation locations) and it is of a suitable version. I have confirmed the configuration step has successfully found and linked the system version during installation on all three win-builder runners.
 
 ## Comment 3
 
