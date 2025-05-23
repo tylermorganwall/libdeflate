@@ -1,39 +1,37 @@
-# Deflate package Makevars
 CMAKE = @CMAKE@
 
-LIBDEFLATE_SYSTEM  = @LIBDEFLATE_SYSTEM@
-LIBDEFLATE_INCLUDE = @LIBDEFLATE_INCLUDE@
-LIBDEFLATE_LINK    = @LIBDEFLATE_LINK@
+LIB_EXISTS  = @LIB_EXISTS@
+@LIB_INCLUDE@
+@LIB_LINK@
 
-ifeq ($(LIBDEFLATE_SYSTEM), TRUE)
+LIBDEFLATE_DIR = @PACKAGE_BASE_DIR@
+INST_DIR = $(LIBDEFLATE_DIR)/inst
+LIB_DIR = $(INST_DIR)/lib/@TARGET_ARCH@/
+INCLUDE_DIR = $(INST_DIR)/include
+LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
+
+# Required for linking with static libraries
+CFLAGS = $(CFLAGS) $(CPICFLAGS)
+CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
+
+ifeq ($(LIB_EXISTS), TRUE)
+  # Link in the system version
   PKG_CPPFLAGS = $(LIBDEFLATE_INCLUDE)
   PKG_CFLAGS   = $(LIBDEFLATE_INCLUDE)
   PKG_LIBS     = $(LIBDEFLATE_LINK)
-  all: $(OBJECTS)
 else
-  # Directories
-  LIBDEFLATE_DIR = @PACKAGE_BASE_DIR@
-  INST_DIR = $(LIBDEFLATE_DIR)/inst
-  LIB_DIR = $(INST_DIR)/lib/@TARGET_ARCH@/
-  INCLUDE_DIR = $(INST_DIR)/include
-  LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
-
-  # Set include paths
+  # Link the bundled version
   PKG_CPPFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
   PKG_CFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
-
   PKG_LIBS = -L$(LIB_DIR) -ldeflate
+endif
 
-  # Required for linking with static libraries
-  CFLAGS = $(CFLAGS) $(CPICFLAGS)
-  CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
+# Build library and objects
+all: $(OBJECTS)
 
-  # Main target
-  all: $(OBJECTS)
+$(OBJECTS): $(LIBDEFLATE_LIB)
 
-  $(OBJECTS): $(LIBDEFLATE_LIB)
-
-  $(LIBDEFLATE_LIB):
+$(LIBDEFLATE_LIB):
 	@echo "==> Building bundled libdeflate"
 	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && \
 	@CMAKE@ --build . --config Release && \
@@ -43,7 +41,6 @@ else
 		src/libdeflate/build/Makefile && \
 	"$(R_HOME)/bin/Rscript" tools/fix-targets.R \
 	inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
-endif
 
 clean: 
 	rm -rf @PACKAGE_BASE_DIR@/src/libdeflate/build && \
@@ -52,6 +49,5 @@ clean:
 	rm -rf @PACKAGE_BASE_DIR@/config.log && \
 	rm -rf @PACKAGE_BASE_DIR@/config.status && \
 	rm -rf @PACKAGE_BASE_DIR@/autom4te.cache && \
-	rm -rf @PACKAGE_BASE_DIR@/configure~
+	rm -rf @PACKAGE_BASE_DIR@/configure~ && \
 	rm -rf tools
-
