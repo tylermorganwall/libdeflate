@@ -31,7 +31,7 @@ all: $(OBJECTS)
 $(OBJECTS): $(LIBDEFLATE_LIB)
 
 $(LIBDEFLATE_LIB):
-	@echo "==> Building bundled libdeflate"
+	@echo @REASON_FOR_BUILDING@
 	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && \
 	@CMAKE@ --build . --config Release && \
 	@CMAKE@ --install . --config Release && \
