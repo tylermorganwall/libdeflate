@@ -24,7 +24,7 @@ Description: Whole-buffer DEFLATE-based compression and
     decompression of raw vectors using the 'libdeflate' library 
     (see <https://github.com/ebiggers/libdeflate>). Provides the user with additional 
     control over the speed and the quality of DEFLATE compression 
-	compared to the fixed level of compression offered in R's 
+    compared to the fixed level of compression offered in R's 
     'memCompress()' function. Also provides the 'libdeflate' static library and 
     'C' headers along with a 'CMake' target and 'package‑config' file that 
     ease linking of 'libdeflate' in packages that compile and statically link 
