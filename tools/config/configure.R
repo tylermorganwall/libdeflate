@@ -109,7 +109,40 @@ if (nzchar(pkgconfig_path)) {
 	}
 }
 
-REASON_FOR_BUILDING = r"{"==> Building bundled libdeflate for linking and packages that build and link bundled static libraries that use CMake"}"
+if (!lib_exists) {
+	fallback_prefixes = c(
+		"/opt/R/arm64",
+		"/opt/R/x86_64",
+		"/opt/homebrew",
+		"/usr/local",
+		"/usr"
+	)
+
+	for (prefix in fallback_prefixes) {
+		lib_exists_check = file.exists(file.path(
+			prefix,
+			"lib",
+			sprintf("%s.a", package_name)
+		))
+		header_exists = file.exists(file.path(prefix, "include", "libdeflate.h"))
+		if (lib_exists_check && header_exists) {
+			lib_exists = TRUE
+			lib_link = file.path(
+				prefix,
+				"lib"
+			)
+			lib_include = file.path(
+				prefix,
+				"include"
+			)
+			LIB_INCLUDE_LINE = sprintf("LIB_INCLUDE = %s", lib_include)
+			LIB_LINK_LINE = sprintf("LIB_LINK = %s", lib_link)
+			break
+		}
+	}
+}
+
+REASON_FOR_BUILDING = r"{"==> Building bundled libdeflate for linking and downstream packages that build and link bundled static libraries that use CMake"}"
 if (lib_exists) {
 	lib_dir = substr(strsplit(lib_link, " ")[[1]][1], 3, 500)
 	message(
@@ -119,7 +152,7 @@ if (lib_exists) {
 			lib_dir
 		)
 	)
-	REASON_FOR_BUILDING = r"{"==> Building bundled libdeflate for packages that build and link bundled static libraries that use CMake"}"
+	REASON_FOR_BUILDING = r"{"==> Building bundled libdeflate for downstream packages that build and link bundled static libraries that use CMake"}"
 }
 
 define(
