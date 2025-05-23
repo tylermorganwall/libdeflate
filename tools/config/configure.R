@@ -14,11 +14,15 @@ uses_ccache = FALSE
 if (grepl("ccache", CC_ARGS[1])) {
   uses_ccache = TRUE
   CC = paste(CC_ARGS[-1], collapse = " ")
+} else {
+  CC = CC_ARGS[1]
 }
 
 if (grepl("ccache", CXX_ARGS[1])) {
   uses_ccache = TRUE
   CXX = paste(CXX_ARGS[-1], collapse = " ")
+} else {
+  CXX = CXX_ARGS[1]
 }
 
 CC_COMPILER = strsplit(CC, " ")[[1]][1]
