@@ -1,6 +1,9 @@
 # Prepare your package for installation here.
 # Use 'define()' to define configuration variables.
 # Use 'configure_file()' to substitute configuration values.
+
+# Common: Find C/C++ compilers, deal with ccache, find the architecture
+# and find CMake.
 is_windows = identical(.Platform$OS.type, "windows")
 is_macos = identical(Sys.info()[['sysname']], "Darwin")
 
@@ -14,11 +17,15 @@ uses_ccache = FALSE
 if (grepl("ccache", CC_ARGS[1])) {
   uses_ccache = TRUE
   CC = paste(CC_ARGS[-1], collapse = " ")
+} else {
+  CC = CC_ARGS[1]
 }
 
 if (grepl("ccache", CXX_ARGS[1])) {
   uses_ccache = TRUE
   CXX = paste(CXX_ARGS[-1], collapse = " ")
+} else {
+  CXX = CXX_ARGS[1]
 }
 
 CC_COMPILER = strsplit(CC, " ")[[1]][1]
@@ -54,40 +61,66 @@ if (syswhich_cmake != "") {
   }
 }
 
+# Now, library specific below
+
 #Use pkg-config (if available) to find a system library
-LIBDEFLATE_SYSTEM = ""
+LIB_SYSTEM = ""
+package_name = "libdeflate"
+package_version = "1.24"
 
 pkgconfig_path = Sys.which("pkg-config")
 
-if (pkgconfig_path != "") {
-  exists_args = c("--exists", "'libdeflate >= 1.24'", "--print-errors")
-  include_args = c("--cflags", "libdeflate")
-  lib_args = c("--static", "--libs", "libdeflate")
+lib_exists = FALSE
+LIB_INCLUDE_LINE = ""
+LIB_LINK_LINE = ""
 
-  libdeflate_exists = ifelse(
-    length(system2(pkgconfig_path, exists_args, stdout = TRUE)) == 0,
-    "TRUE",
-    "FALSE"
+if (nzchar(pkgconfig_path)) {
+  pc_status = system2(
+    pkgconfig_path,
+    c("--exists", sprintf("%s >= %s", package_name, package_version)),
+    stdout = FALSE,
+    stderr = FALSE
   )
-  libdeflate_include = system2(pkgconfig_path, include_args, stdout = TRUE)
-  libdeflate_link = system2(pkgconfig_path, lib_args, stdout = TRUE)
-} else {
-  libdeflate_exists = "FALSE"
-  libdeflate_include = ""
-  libdeflate_link = ""
+
+  lib_exists = pc_status == 0
+
+  if (lib_exists) {
+    message(
+      sprintf(
+        "*** configure: system %s exists, using that for building the library",
+        package_name
+      )
+    )
+    lib_include = system2(
+      pkgconfig_path,
+      c("--cflags", package_name),
+      stdout = TRUE
+    )
+    message(
+      sprintf("*** configure: using include path '%s'", lib_include)
+    )
+    lib_link = system2(
+      pkgconfig_path,
+      c("--static", "--libs", package_name),
+      stdout = TRUE
+    )
+    LIB_INCLUDE_LINE = sprintf("LIB_INCLUDE = %s", lib_include)
+    LIB_LINK_LINE = sprintf("LIB_LINK = %s", lib_include)
+  }
 }
 
-build_libdeflate = TRUE
-if (libdeflate_exists == "TRUE") {
-  libdeflate_dir = substr(strsplit(libdeflate_link, " ")[[1]][1], 3, 500)
+if (lib_exists) {
+  lib_dir = substr(strsplit(lib_link, " ")[[1]][1], 3, 500)
   message(
     sprintf(
-      "*** configure.R: Found installed version of libdeflate with correct version at '%s', will link in that version to the package.",
-      libdeflate_dir
+      "*** configure.R: Found installed version of %s with correct version at '%s', will link in that version to the package.",
+      package_name,
+      lib_dir
     )
   )
-  build_libdeflate = FALSE
 }
+
+# Everything below here is package specific
 
 define(
   PACKAGE_BASE_DIR = PACKAGE_BASE_DIR,
@@ -95,12 +128,10 @@ define(
   CMAKE = CMAKE,
   CC_FULL = CC_FULL,
   CXX_FULL = CXX_FULL,
-  LIBDEFLATE_SYSTEM = libdeflate_exists,
-  LIBDEFLATE_INCLUDE = libdeflate_include,
-  LIBDEFLATE_LINK = libdeflate_link
+  LIB_EXISTS = as.character(lib_exists),
+  LIB_INCLUDE = LIB_INCLUDE_LINE,
+  LIB_LINK = LIB_LINK_LINE
 )
-
-# Everything below here is package specific
 
 if (!dir.exists("src/libdeflate/build")) {
   dir.create("src/libdeflate/build")
