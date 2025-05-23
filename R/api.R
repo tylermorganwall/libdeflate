@@ -5,6 +5,7 @@
 #' @param level Default `6L`. Integer in [0, 12] giving the compression level (0 = no compression, 1 = fastest, 6 = default, 12 = slowest).
 #' @return An external pointer (`externalptr`) to a libdeflate compressor.
 #' @export
+#' @seealso [base::memDecompress()] also provides DEFLATE compression via libdeflate, but does not offer control over the compression level.
 #' @examples
 #' # allocate a compressor and compress a simple string
 #' cmp = alloc_compressor()

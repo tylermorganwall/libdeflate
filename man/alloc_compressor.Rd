@@ -22,3 +22,6 @@ raw_in = charToRaw("Example data")
 raw_cmp = deflate_compress(cmp, raw_in)
 stopifnot(is.raw(raw_cmp))
 }
+\seealso{
+[base::memDecompress()] also provides DEFLATE compression via libdeflate, but does not offer control over the compression level.
+}

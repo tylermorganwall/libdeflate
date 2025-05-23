@@ -1,29 +1,30 @@
-# OpenEXR package Makevars
+# Deflate package Makevars
 CMAKE = @CMAKE@
 
-# Directories
-LIBDEFLATE_DIR = @PACKAGE_BASE_DIR@
-INST_DIR = $(LIBDEFLATE_DIR)/inst
-LIB_DIR = $(INST_DIR)/lib/@TARGET_ARCH@/
-INCLUDE_DIR = $(INST_DIR)/include
-LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
+LIBDEFLATE_SYSTEM  = @LIBDEFLATE_SYSTEM@
+LIBDEFLATE_INCLUDE = @LIBDEFLATE_INCLUDE@
+LIBDEFLATE_LINK    = @LIBDEFLATE_LINK@
 
-# Set include paths
-PKG_CPPFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
-PKG_CFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
+ifeq ($(LIBDEFLATE_SYSTEM), TRUE)
+  #Link in the system version
+  PKG_CPPFLAGS = $(LIBDEFLATE_INCLUDE)
+  PKG_CFLAGS   = $(LIBDEFLATE_INCLUDE)
+  PKG_LIBS     = $(LIBDEFLATE_LINK)
+  all: $(OBJECTS)
 
-PKG_LIBS = -L$(LIB_DIR) -ldeflate
+  # Still install the static library, as while the CRAN servers may have the 
+  # matching version of libdeflate, the user may not. Providing this will thus
+  # allow them to develop and compile packages that depend on libdeflate.
+  LIBDEFLATE_DIR = @PACKAGE_BASE_DIR@
+  INST_DIR = $(LIBDEFLATE_DIR)/inst
+  LIB_DIR = $(INST_DIR)/lib/@TARGET_ARCH@/
+  INCLUDE_DIR = $(INST_DIR)/include
+  LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
 
-# Required for linking with static libraries
-CFLAGS = $(CFLAGS) $(CPICFLAGS)
-CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
+  $(OBJECTS): $(LIBDEFLATE_LIB)
 
-# Main target
-all: $(OBJECTS)
-
-$(OBJECTS): $(LIBDEFLATE_LIB)
-
-$(LIBDEFLATE_LIB):
+  $(LIBDEFLATE_LIB):
+	@echo "==> Building bundled libdeflate"
 	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && \
 	@CMAKE@ --build . --config Release && \
 	@CMAKE@ --install . --config Release && \
@@ -31,7 +32,41 @@ $(LIBDEFLATE_LIB):
 	"$(R_HOME)/bin/Rscript" tools/fix-line-endings.R src/Makevars \
 		src/libdeflate/build/Makefile && \
 	"$(R_HOME)/bin/Rscript" tools/fix-targets.R \
-	  inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
+	inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
+else
+  # Directories
+  LIBDEFLATE_DIR = @PACKAGE_BASE_DIR@
+  INST_DIR = $(LIBDEFLATE_DIR)/inst
+  LIB_DIR = $(INST_DIR)/lib/@TARGET_ARCH@/
+  INCLUDE_DIR = $(INST_DIR)/include
+  LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
+
+  # Set include paths
+  PKG_CPPFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
+  PKG_CFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
+
+  PKG_LIBS = -L$(LIB_DIR) -ldeflate
+
+  # Required for linking with static libraries
+  CFLAGS = $(CFLAGS) $(CPICFLAGS)
+  CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
+
+  # Main target
+  all: $(OBJECTS)
+
+  $(OBJECTS): $(LIBDEFLATE_LIB)
+
+  $(LIBDEFLATE_LIB):
+	@echo "==> Building bundled libdeflate"
+	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && \
+	@CMAKE@ --build . --config Release && \
+	@CMAKE@ --install . --config Release && \
+	cd @PACKAGE_BASE_DIR@ && \
+	"$(R_HOME)/bin/Rscript" tools/fix-line-endings.R src/Makevars \
+		src/libdeflate/build/Makefile && \
+	"$(R_HOME)/bin/Rscript" tools/fix-targets.R \
+	inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
+endif
 
 clean: 
 	rm -rf @PACKAGE_BASE_DIR@/src/libdeflate/build && \

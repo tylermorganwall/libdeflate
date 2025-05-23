@@ -54,13 +54,50 @@ if (syswhich_cmake != "") {
   }
 }
 
+#Use pkg-config (if available) to find a system library
+LIBDEFLATE_SYSTEM = ""
+
+pkgconfig_path = Sys.which("pkg-config")
+
+if (pkgconfig_path != "") {
+  exists_args = c("--exists", "'libdeflate >= 1.24'", "--print-errors")
+  include_args = c("--cflags", "libdeflate")
+  lib_args = c("--static", "--libs", "libdeflate")
+
+  libdeflate_exists = ifelse(
+    length(system2(pkgconfig_path, exists_args, stdout = TRUE)) == 0,
+    "TRUE",
+    "FALSE"
+  )
+  libdeflate_include = system2(pkgconfig_path, include_args, stdout = TRUE)
+  libdeflate_link = system2(pkgconfig_path, lib_args, stdout = TRUE)
+} else {
+  libdeflate_exists = "FALSE"
+  libdeflate_include = ""
+  libdeflate_link = ""
+}
+
+build_libdeflate = TRUE
+if (libdeflate_exists == "TRUE") {
+  libdeflate_dir = substr(strsplit(libdeflate_link, " ")[[1]][1], 3, 500)
+  message(
+    sprintf(
+      "*** configure.R: Found installed version of libdeflate with correct version at '%s', will link in that version to the package.",
+      libdeflate_dir
+    )
+  )
+  build_libdeflate = FALSE
+}
 
 define(
   PACKAGE_BASE_DIR = PACKAGE_BASE_DIR,
   TARGET_ARCH = TARGET_ARCH,
   CMAKE = CMAKE,
   CC_FULL = CC_FULL,
-  CXX_FULL = CXX_FULL
+  CXX_FULL = CXX_FULL,
+  LIBDEFLATE_SYSTEM = libdeflate_exists,
+  LIBDEFLATE_INCLUDE = libdeflate_include,
+  LIBDEFLATE_LINK = libdeflate_link
 )
 
 # Everything below here is package specific
@@ -73,20 +110,19 @@ file_cache = "src/libdeflate/build/initial-cache.cmake"
 writeLines(
   sprintf(
     r"-{set(CMAKE_C_COMPILER "%s" CACHE FILEPATH "C compiler")
-set(CMAKE_CXX_COMPILER "%s" CACHE FILEPATH "C++ compiler")
-set(CMAKE_C_FLAGS "-fPIC -fvisibility=hidden" CACHE STRING "C flags")
-set(CMAKE_CXX_FLAGS "-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" CACHE STRING "C++ flags")
-set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Position independent code")
-set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type")
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs")
-set(CMAKE_OSX_ARCHITECTURES "%s" CACHE STRING "Target architecture")}-",
+  set(CMAKE_CXX_COMPILER "%s" CACHE FILEPATH "C++ compiler")
+  set(CMAKE_C_FLAGS "-fPIC -fvisibility=hidden" CACHE STRING "C flags")
+  set(CMAKE_CXX_FLAGS "-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" CACHE STRING "C++ flags")
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Position independent code")
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type")
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs")
+  set(CMAKE_OSX_ARCHITECTURES "%s" CACHE STRING "Target architecture")}-",
     CC_FULL,
     CXX_FULL,
     TARGET_ARCH
   ),
   file_cache
 )
-
 
 inst_dir = file.path(PACKAGE_BASE_DIR, "inst") # ${PACKAGE_BASE_DIR}/inst
 dir.create(inst_dir, recursive = TRUE, showWarnings = FALSE)
