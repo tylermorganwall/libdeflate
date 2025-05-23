@@ -12,9 +12,9 @@ libdeflate 1.23 is available as a system library on all the CRAN check
 platforms including Windows and macOS (which provide static libraries).
 There is no acknowledgement of 'prior art'.
 
-## Response 1
+### Response 1
 
-To clarify the purpose of the package, the DESCRIPTION 'Description' field has been updated to note the differences between this interface to libdeflate's DEFLATE compression as compared to base R's 'memCompress()' interface (which fixes the DEFLATE compression level at 6, out of a range of 0-12), state that 'libdeflate' will link the system library if found when building the package, and note that it also provides a 'CMake' target to ease linking of downstream packages that wish to statically link 'libdeflate' to compilation units in their package source that build and link in static libraries using 'CMake'.
+To clarify the purpose of the package, the DESCRIPTION 'Description' field has been updated to note the differences between this interface to libdeflate's DEFLATE compression as compared to base R's 'memCompress()' interface (which fixes the DEFLATE compression level at 6, out of a range of 0-12), state that 'libdeflate' will link the system library if found when building the package, and note that it also provides a 'CMake' target to ease linking of downstream packages that wish to statically link 'libdeflate' to compilation units in their package source that build and link bundled static libraries using 'CMake'.
 
 Additionally, a \seealso{} field was added to the R interface documentation to state the difference between the existing implementation of DEFLATE compression provided by base R and this implementation.
 
@@ -27,7 +27,7 @@ to make use of a library not written solely for the package, the package
 installation should first look to see if it is already installed and if
 so is of a suitable version."
 
-## Response 2
+### Response 2
 
 The configure script has been updated to link the system libdeflate if found (either using pkg-config, or via common installation locations) and it is of a suitable version.
 
@@ -56,6 +56,6 @@ CMake Error at /usr/share/cmake/Modules/CMakeTestCCompiler.cmake:67 (message):
 
   is not able to compile a simple test program.
 
-## Response 3
+### Response 3
 
 The configure script has been updated to account for the potential use of ccache.
