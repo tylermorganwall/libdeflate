@@ -120,8 +120,6 @@ if (lib_exists) {
   )
 }
 
-# Everything below here is package specific
-
 define(
   PACKAGE_BASE_DIR = PACKAGE_BASE_DIR,
   TARGET_ARCH = TARGET_ARCH,
@@ -132,6 +130,8 @@ define(
   LIB_INCLUDE = LIB_INCLUDE_LINE,
   LIB_LINK = LIB_LINK_LINE
 )
+
+# Everything below here is package specific
 
 if (!dir.exists("src/libdeflate/build")) {
   dir.create("src/libdeflate/build")
