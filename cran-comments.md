@@ -1,3 +1,9 @@
+## CHECK PASSED
+
+This has been checked on macOS --as-cran, all 30 rhub runners, win-builder, and mac-builder with no notes, warnings, or errors.
+
+# Response to BDR comments:
+
 ## Comment 1
 
 (i) It is not clear what the point of this is.  R already uses
