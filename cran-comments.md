@@ -14,7 +14,7 @@ There is no acknowledgement of 'prior art'.
 
 ## Response 1
 
-To clarify the purpose of the package, the DESCRIPTION 'Description' field has been updated to note the differences between this interface to libdeflate's DEFLATE compression as compared to base R's 'memCompress()' interface (which fixes the DEFLATE compression level at 6, out of a range of 0-12), state that 'libdeflate' will link the system library if found when building the package, and note that it also provides a 'CMake' target to ease linking of downstream packages that wish to statically link 'libdeflate' to compilation units in their package source that build and link in static libraries using 'CMake'. 
+To clarify the purpose of the package, the DESCRIPTION 'Description' field has been updated to note the differences between this interface to libdeflate's DEFLATE compression as compared to base R's 'memCompress()' interface (which fixes the DEFLATE compression level at 6, out of a range of 0-12), state that 'libdeflate' will link the system library if found when building the package, and note that it also provides a 'CMake' target to ease linking of downstream packages that wish to statically link 'libdeflate' to compilation units in their package source that build and link in static libraries using 'CMake'.
 
 Additionally, a \seealso{} field was added to the R interface documentation to state the difference between the existing implementation of DEFLATE compression provided by base R and this implementation.
 
@@ -29,7 +29,7 @@ so is of a suitable version."
 
 ## Response 2
 
-The configure script has been updated to link the system libdeflate if found and it is of a suitable version.
+The configure script has been updated to link the system libdeflate if found (either using pkg-config, or via common installation locations) and it is of a suitable version.
 
 ## Comment 3
 
