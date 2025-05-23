@@ -12,7 +12,6 @@ src/*.so
 src/*.o
 src/Makevars
 src/Makevars.win
-
 /.quarto/
 src/libdeflate/.github
 src/libdeflate/programs
