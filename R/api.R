@@ -5,16 +5,15 @@
 #' @param level Default `6L`. Integer in [0, 12] giving the compression level (0 = no compression, 1 = fastest, 6 = default, 12 = slowest).
 #' @return An external pointer (`externalptr`) to a libdeflate compressor.
 #' @export
-#' @seealso [base::memDecompress()] also provides DEFLATE compression via libdeflate, but does not offer control over the compression level.
-#' @examples
+#' @seealso [base::memDecompress()] also provides DEFLATE compression via libdeflate, but it fixes the compression level at 6.
 #' # allocate a compressor and compress a simple string
 #' cmp = alloc_compressor()
 #' raw_in = charToRaw("Example data")
 #' raw_cmp = deflate_compress(cmp, raw_in)
 #' stopifnot(is.raw(raw_cmp))
 alloc_compressor = function(level = 6L) {
-  stopifnot(level <= 12 && level >= 0L)
-  .Call("C_alloc_compressor", as.integer(level), PACKAGE = "libdeflate")
+	stopifnot(level <= 12 && level >= 0L)
+	.Call("C_alloc_compressor", as.integer(level), PACKAGE = "libdeflate")
 }
 
 #' Compress a raw vector with libdeflate
@@ -36,12 +35,12 @@ alloc_compressor = function(level = 6L) {
 #' raw_cmp_12 = deflate_compress(cmp, raw_in)
 #' print(sprintf("Length in: %i Length out: %i", length(raw_in), length(raw_cmp_12) ))
 deflate_compress = function(compressor, input) {
-  .Call(
-    "C_deflate_compress",
-    compressor,
-    as.raw(input),
-    PACKAGE = "libdeflate"
-  )
+	.Call(
+		"C_deflate_compress",
+		compressor,
+		as.raw(input),
+		PACKAGE = "libdeflate"
+	)
 }
 
 #' Allocate a libdeflate decompressor
@@ -54,7 +53,7 @@ deflate_compress = function(compressor, input) {
 #' dcmp = alloc_decompressor()
 #' stopifnot(inherits(dcmp, "externalptr"))
 alloc_decompressor = function() {
-  .Call("C_alloc_decompressor", PACKAGE = "libdeflate")
+	.Call("C_alloc_decompressor", PACKAGE = "libdeflate")
 }
 
 #' Decompress a raw vector with libdeflate
@@ -76,11 +75,11 @@ alloc_decompressor = function() {
 #' raw_out = deflate_decompress(dcmp, raw_cmp, length(raw_in))
 #' stopifnot(identical(raw_out, raw_in))
 deflate_decompress = function(decompressor, input, out_len) {
-  .Call(
-    "C_deflate_decompress",
-    decompressor,
-    as.raw(input),
-    as.integer(out_len),
-    PACKAGE = "libdeflate"
-  )
+	.Call(
+		"C_deflate_decompress",
+		decompressor,
+		as.raw(input),
+		as.integer(out_len),
+		PACKAGE = "libdeflate"
+	)
 }

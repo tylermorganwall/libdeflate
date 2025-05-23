@@ -15,13 +15,11 @@ An external pointer (`externalptr`) to a libdeflate compressor.
 \description{
 Create a new libdeflate compressor at the specified compression level.
 }
-\examples{
+\seealso{
+[base::memDecompress()] also provides DEFLATE compression via libdeflate, but it fixes the compression level at 6.
 # allocate a compressor and compress a simple string
 cmp = alloc_compressor()
 raw_in = charToRaw("Example data")
 raw_cmp = deflate_compress(cmp, raw_in)
 stopifnot(is.raw(raw_cmp))
-}
-\seealso{
-[base::memDecompress()] also provides DEFLATE compression via libdeflate, but does not offer control over the compression level.
 }
