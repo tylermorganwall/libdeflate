@@ -77,7 +77,7 @@ LIB_LINK_LINE = ""
 if (nzchar(pkgconfig_path)) {
   pc_status = system2(
     pkgconfig_path,
-    c("--exists", sprintf("%s >= %s", package_name, package_version)),
+    c("--exists", sprintf("'%s >= %s'", package_name, package_version)),
     stdout = FALSE,
     stderr = FALSE
   )
@@ -105,7 +105,7 @@ if (nzchar(pkgconfig_path)) {
       stdout = TRUE
     )
     LIB_INCLUDE_LINE = sprintf("LIB_INCLUDE = %s", lib_include)
-    LIB_LINK_LINE = sprintf("LIB_LINK = %s", lib_include)
+    LIB_LINK_LINE = sprintf("LIB_LINK = %s", lib_link)
   }
 }
 

@@ -1,9 +1,5 @@
 CMAKE = @CMAKE@
 
-LIB_EXISTS  = @LIB_EXISTS@
-@LIB_INCLUDE@
-@LIB_LINK@
-
 LIBDEFLATE_DIR = @PACKAGE_BASE_DIR@
 INST_DIR = $(LIBDEFLATE_DIR)/inst
 LIB_DIR = $(INST_DIR)/lib/@TARGET_ARCH@/
@@ -14,11 +10,14 @@ LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
 CFLAGS = $(CFLAGS) $(CPICFLAGS)
 CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
 
-ifeq ($(LIB_EXISTS), TRUE)
+@LIB_INCLUDE@
+@LIB_LINK@
+
+ifeq (@LIB_EXISTS@, TRUE)
   # Link in the system version
-  PKG_CPPFLAGS = $(LIBDEFLATE_INCLUDE)
-  PKG_CFLAGS   = $(LIBDEFLATE_INCLUDE)
-  PKG_LIBS     = $(LIBDEFLATE_LINK)
+  PKG_CPPFLAGS = $(LIB_INCLUDE)
+  PKG_CFLAGS   = $(LIB_INCLUDE)
+  PKG_LIBS     = $(LIB_LINK)
 else
   # Link the bundled version
   PKG_CPPFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
@@ -50,4 +49,4 @@ clean:
 	rm -rf @PACKAGE_BASE_DIR@/config.status && \
 	rm -rf @PACKAGE_BASE_DIR@/autom4te.cache && \
 	rm -rf @PACKAGE_BASE_DIR@/configure~ && \
-	rm -rf tools
+	rm -rf @PACKAGE_BASE_DIR@/tools
