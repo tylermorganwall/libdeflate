@@ -11,12 +11,12 @@ CC_ARGS = strsplit(CC_RAW, " ")[[1]]
 CXX_ARGS = strsplit(CXX_RAW, " ")[[1]]
 
 uses_ccache = FALSE
-if (grepl(CC_ARGS[1], "ccache")) {
+if (grepl("ccache", CC_ARGS[1])) {
   uses_ccache = TRUE
   CC = paste(CC_ARGS[-1], collapse = " ")
 }
 
-if (grepl(CXX_ARGS[1], "ccache")) {
+if (grepl("ccache", CXX_ARGS[1])) {
   uses_ccache = TRUE
   CXX = paste(CXX_ARGS[-1], collapse = " ")
 }
