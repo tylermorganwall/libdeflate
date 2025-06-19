@@ -7,23 +7,62 @@
 is_windows = identical(.Platform$OS.type, "windows")
 is_macos = identical(Sys.info()[['sysname']], "Darwin")
 
-CC_RAW = r_cmd_config("CC")
-CXX_RAW = r_cmd_config("CXX")
+CC_RAW = trimws(r_cmd_config("CC"))
+CXX_RAW = trimws(r_cmd_config("CXX"))
 
 CC_ARGS = strsplit(CC_RAW, " ")[[1]]
 CXX_ARGS = strsplit(CXX_RAW, " ")[[1]]
 
-uses_ccache = FALSE
-if (grepl("ccache", CC_ARGS[1])) {
-	uses_ccache = TRUE
-	CC = paste(CC_ARGS[-1], collapse = " ")
+CC_ARGS_FIRST = CC_ARGS[1]
+CXX_ARGS_FIRST = CXX_ARGS[1]
+
+CC_DEALIASED = Sys.which(CC_ARGS_FIRST)[1]
+CXX_DEALIASED = Sys.which(CXX_ARGS_FIRST)[1]
+
+detect_caching = function(path) {
+	return(
+		grepl("ccache", path) ||
+			grepl("distcc", path) ||
+			grepl("sccache", path) ||
+			grepl("cache", path)
+	)
+}
+
+uses_caching = FALSE
+if (detect_caching(CC_DEALIASED)) {
+	if (!detect_caching(CC_ARGS_FIRST)) {
+		message(sprintf(
+			"Aliasing '%s' of build cache launcher detected: actual caching done by '%s'. ",
+			CC_ARGS_FIRST,
+			CC_DEALIASED
+		))
+	}
+	uses_caching = TRUE
+	first_non_launcher_arg = which(substr(CC_ARGS[-1], 1, 1) != "-")[1]
+	stopifnot(length(first_non_launcher_arg) > 0)
+	CC = paste(
+		CC_ARGS[-c(1, seq(1, first_non_launcher_arg))],
+		collapse = " "
+	)
 } else {
 	CC = CC_ARGS[1]
 }
 
-if (grepl("ccache", CXX_ARGS[1])) {
-	uses_ccache = TRUE
-	CXX = paste(CXX_ARGS[-1], collapse = " ")
+if (detect_caching(CXX_DEALIASED)) {
+	if (!detect_caching(CXX_ARGS_FIRST) && !uses_caching) {
+		message(sprintf(
+			"Aliasing '%s' of build cache launcher detected: actual caching done by '%s'. ",
+			CXX_ARGS_FIRST,
+			CXX_DEALIASED
+		))
+	}
+	uses_caching = TRUE
+	first_non_launcher_arg = which(substr(CXX_ARGS[-1], 1, 1) != "-")[1]
+	stopifnot(length(first_non_launcher_arg) > 0)
+	CXX = paste(
+		CXX_ARGS[-c(1, seq(1, first_non_launcher_arg))],
+		collapse = " "
+	)
 } else {
 	CXX = CXX_ARGS[1]
 }
@@ -124,9 +163,17 @@ if (!lib_exists) {
 			"lib",
 			sprintf("%s.a", package_name)
 		))
-		header_exists = file.exists(file.path(prefix, "include", "libdeflate.h"))
+		header_exists = file.exists(file.path(
+			prefix,
+			"include",
+			"libdeflate.h"
+		))
 		if (header_exists) {
-			header_lines = readLines(file.path(prefix, "include", "libdeflate.h"))
+			header_lines = readLines(file.path(
+				prefix,
+				"include",
+				"libdeflate.h"
+			))
 			major_version_line = grepl("LIBDEFLATE_VERSION_MAJOR", header_lines)
 			minor_version_line = grepl("LIBDEFLATE_VERSION_MINOR", header_lines)
 			stopifnot(sum(major_version_line) == 1)
@@ -250,12 +297,16 @@ cmake_cfg = c(
 setwd(build_dir)
 
 status = system2(CMAKE, cmake_cfg)
-if (status != 0) stop("CMake configure step failed")
+if (status != 0) {
+	stop("CMake configure step failed")
+}
 
 setwd(PACKAGE_BASE_DIR)
 
 lf_ify = function(path) {
-	if (!file.exists(path)) return(invisible())
+	if (!file.exists(path)) {
+		return(invisible())
+	}
 	txt = readLines(path, warn = FALSE) # strips CR automatically
 	writeLines(txt, path, sep = "\n", useBytes = TRUE)
 }
