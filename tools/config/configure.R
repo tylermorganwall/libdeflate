@@ -179,8 +179,6 @@ writeLines(
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type")
   set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs")
   set(CMAKE_OSX_ARCHITECTURES "%s" CACHE STRING "Target architecture")}-",
-		CC_FULL,
-		CXX_FULL,
 		TARGET_ARCH
 	),
 	file_cache
