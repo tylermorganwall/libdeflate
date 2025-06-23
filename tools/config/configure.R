@@ -7,77 +7,6 @@
 is_windows = identical(.Platform$OS.type, "windows")
 is_macos = identical(Sys.info()[['sysname']], "Darwin")
 
-CC_RAW = trimws(r_cmd_config("CC"))
-CXX_RAW = trimws(r_cmd_config("CXX"))
-
-CC_ARGS = strsplit(CC_RAW, " ")[[1]]
-CXX_ARGS = strsplit(CXX_RAW, " ")[[1]]
-
-CC_ARGS_FIRST = CC_ARGS[1]
-CXX_ARGS_FIRST = CXX_ARGS[1]
-
-CC_DEALIASED = Sys.which(CC_ARGS_FIRST)[1]
-CXX_DEALIASED = Sys.which(CXX_ARGS_FIRST)[1]
-
-detect_caching = function(path) {
-	return(
-		grepl("ccache", path) ||
-			grepl("distcc", path) ||
-			grepl("sccache", path) ||
-			grepl("cache", path)
-	)
-}
-
-uses_caching = FALSE
-if (detect_caching(CC_DEALIASED)) {
-	if (!detect_caching(CC_ARGS_FIRST)) {
-		message(sprintf(
-			"Aliasing '%s' of build cache launcher detected: actual caching done by '%s'. ",
-			CC_ARGS_FIRST,
-			CC_DEALIASED
-		))
-	}
-	uses_caching = TRUE
-	first_non_launcher_arg = which(substr(CC_ARGS[-1], 1, 1) != "-")[1]
-	stopifnot(length(first_non_launcher_arg) > 0)
-	CC = paste(
-		CC_ARGS[-c(1, seq(1, first_non_launcher_arg))],
-		collapse = " "
-	)
-} else {
-	CC = CC_ARGS[1]
-}
-
-if (detect_caching(CXX_DEALIASED)) {
-	if (!detect_caching(CXX_ARGS_FIRST) && !uses_caching) {
-		message(sprintf(
-			"Aliasing '%s' of build cache launcher detected: actual caching done by '%s'. ",
-			CXX_ARGS_FIRST,
-			CXX_DEALIASED
-		))
-	}
-	uses_caching = TRUE
-	first_non_launcher_arg = which(substr(CXX_ARGS[-1], 1, 1) != "-")[1]
-	stopifnot(length(first_non_launcher_arg) > 0)
-	CXX = paste(
-		CXX_ARGS[-c(1, seq(1, first_non_launcher_arg))],
-		collapse = " "
-	)
-} else {
-	CXX = CXX_ARGS[1]
-}
-
-CC_COMPILER = strsplit(CC, " ")[[1]][1]
-CXX_COMPILER = strsplit(CXX, " ")[[1]][1]
-
-CC_FULL = normalizePath(
-	Sys.which(CC_COMPILER),
-	winslash = "/"
-)
-CXX_FULL = normalizePath(
-	Sys.which(CXX_COMPILER),
-	winslash = "/"
-)
 TARGET_ARCH = Sys.info()[["machine"]]
 PACKAGE_BASE_DIR = normalizePath(getwd(), winslash = "/")
 
@@ -229,8 +158,6 @@ define(
 	PACKAGE_BASE_DIR = PACKAGE_BASE_DIR,
 	TARGET_ARCH = TARGET_ARCH,
 	CMAKE = CMAKE,
-	CC_FULL = CC_FULL,
-	CXX_FULL = CXX_FULL,
 	LIB_EXISTS = as.character(lib_exists),
 	LIB_INCLUDE = LIB_INCLUDE_LINE,
 	LIB_LINK = LIB_LINK_LINE,
@@ -246,9 +173,7 @@ if (!dir.exists("src/libdeflate/build")) {
 file_cache = "src/libdeflate/build/initial-cache.cmake"
 writeLines(
 	sprintf(
-		r"-{set(CMAKE_C_COMPILER "%s" CACHE FILEPATH "C compiler")
-  set(CMAKE_CXX_COMPILER "%s" CACHE FILEPATH "C++ compiler")
-  set(CMAKE_C_FLAGS "-fPIC -fvisibility=hidden" CACHE STRING "C flags")
+		r"-{set(CMAKE_C_FLAGS "-fPIC -fvisibility=hidden" CACHE STRING "C flags")
   set(CMAKE_CXX_FLAGS "-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" CACHE STRING "C++ flags")
   set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Position independent code")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type")
