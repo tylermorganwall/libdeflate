@@ -15,9 +15,9 @@ CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
 
 ifeq (@LIB_EXISTS@, TRUE)
   # Link in the system version
-  PKG_CPPFLAGS = $(LIB_INCLUDE)
-  PKG_CFLAGS   = $(LIB_INCLUDE)
-  PKG_LIBS     = $(LIB_LINK)
+  PKG_CPPFLAGS = -I$(LIB_INCLUDE)
+  PKG_CFLAGS   = -I$(LIB_INCLUDE)
+  PKG_LIBS     = -L$(LIB_LINK)
 else
   # Link the bundled version
   PKG_CPPFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
