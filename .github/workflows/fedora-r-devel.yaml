@@ -29,16 +29,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: (Optional) extra system deps
-        run: |
-          dnf -y install make git      # add libs your package needs
-      - name: Build and check
+      - name: Put /opt/R-devel/bin on PATH
+        run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
+
+      - name: Build & check
         run: |
           R CMD build .
           PKG=$(ls -1t *.tar.gz | head -n 1)
-          R CMD check --as-cran --no-stop-on-test-error "${PKG}"
+          R CMD check --as-cran --no-stop-on-test-error "$PKG"
 
-  #--------------------------------------------------------------------
+# -------------------------------------------------------------------
   clang-fedora:
     name: "Fedora 42 • R-devel • Clang 20"
     runs-on: ubuntu-latest
@@ -50,11 +50,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: (Optional) extra system deps
-        run: |
-          dnf -y install make git
-      - name: Build and check
+      - name: Put /opt/R-devel/bin on PATH
+        run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
+
+      - name: Build & check
         run: |
           R CMD build .
           PKG=$(ls -1t *.tar.gz | head -n 1)
-          R CMD check --as-cran --no-stop-on-test-error "${PKG}"
+          R CMD check --as-cran --no-stop-on-test-error "$PKG"
