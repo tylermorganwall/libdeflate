@@ -22,7 +22,7 @@ jobs:
     name: "Fedora 42 • R-devel • GCC 15"
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/r-hub/fedora-gcc-devel:latest
+      image: rhub/fedora-gcc-devel:latest
       options: --user root
     env:
       _R_CHECK_SUGGESTS_ONLY_: "false"
@@ -43,7 +43,7 @@ jobs:
     name: "Fedora 42 • R-devel • Clang 20"
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/r-hub/fedora-clang-devel:latest
+      image: rhub/fedora-clang-devel:latest
       options: --user root
     env:
       _R_CHECK_SUGGESTS_ONLY_: "true"
