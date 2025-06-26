@@ -1,0 +1,60 @@
+name: Fedora R-devel checks
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+env:
+  _R_CHECK_INSTALL_DEPENDS_: "true"
+  _R_CHECK_NO_RECOMMENDED_: "true"
+  _R_CHECK_DOC_SIZES2_:  "true"
+  _R_CHECK_DEPRECATED_DEFUNCT_: "true"
+  _R_CHECK_NATIVE_ROUTINE_REGISTRATION_: "true"
+  _R_CHECK_FF_CALLS_:    "registration"
+  _R_CHECK_LIMIT_CORES_: "true"
+
+jobs:
+  #--------------------------------------------------------------------
+  gcc-fedora:
+    name: "Fedora 42 • R-devel • GCC 15"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/r-hub/fedora-gcc-devel:latest
+      options: --user root
+    env:
+      _R_CHECK_SUGGESTS_ONLY_: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: (Optional) extra system deps
+        run: |
+          dnf -y install make git      # add libs your package needs
+      - name: Build and check
+        run: |
+          R CMD build .
+          PKG=$(ls -1t *.tar.gz | head -n 1)
+          R CMD check --as-cran --no-stop-on-test-error "${PKG}"
+
+  #--------------------------------------------------------------------
+  clang-fedora:
+    name: "Fedora 42 • R-devel • Clang 20"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/r-hub/fedora-clang-devel:latest
+      options: --user root
+    env:
+      _R_CHECK_SUGGESTS_ONLY_: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: (Optional) extra system deps
+        run: |
+          dnf -y install make git
+      - name: Build and check
+        run: |
+          R CMD build .
+          PKG=$(ls -1t *.tar.gz | head -n 1)
+          R CMD check --as-cran --no-stop-on-test-error "${PKG}"
