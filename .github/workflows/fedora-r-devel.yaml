@@ -29,6 +29,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install build tools
+        run: |
+          dnf -y install cmake make git
+          
       - name: Put /opt/R-devel/bin on PATH
         run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
 
@@ -37,7 +41,7 @@ jobs:
           R CMD build .
           PKG=$(ls -1t *.tar.gz | head -n 1)
           R CMD check --as-cran --no-stop-on-test-error "$PKG"
-          
+
       - name: Upload artifacts
         if: always()                          # run even on failure
         uses: actions/upload-artifact@v4
@@ -59,6 +63,10 @@ jobs:
       _R_CHECK_SUGGESTS_ONLY_: "true"
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          dnf -y install cmake make git
 
       - name: Put /opt/R-devel/bin on PATH
         run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
