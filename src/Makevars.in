@@ -10,19 +10,19 @@ LIBDEFLATE_LIB = $(LIB_DIR)/libdeflate.a
 CFLAGS = $(CFLAGS) $(CPICFLAGS)
 CXXFLAGS = $(CXXFLAGS) $(CXXPICFLAGS)
 
-@LIB_INCLUDE@
-@LIB_LINK@
+@LIB_INCLUDE_ASSIGN@
+@LIB_LINK_ASSIGN@
 
 ifeq (@LIB_EXISTS@, TRUE)
-  # Link in the system version
-  PKG_CPPFLAGS = -I$(LIB_INCLUDE)
-  PKG_CFLAGS   = -I$(LIB_INCLUDE)
-  PKG_LIBS     = -L$(LIB_LINK)
+  # Link in the system version, which already should have -I/-L included
+  PKG_CPPFLAGS = $(LIB_INCLUDE)
+  PKG_CFLAGS   = $(LIB_INCLUDE)
+  PKG_LIBS  = $(LIB_LINK) -ldeflate
 else
   # Link the bundled version
   PKG_CPPFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
   PKG_CFLAGS = -I"$(LIBDEFLATE_DIR)/include" -I"$(LIBDEFLATE_DIR)/inst/include"
-  PKG_LIBS = -L$(LIB_DIR) -ldeflate
+  PKG_LIBS = -L"$(LIB_DIR)" -ldeflate
 endif
 
 # Build library and objects
