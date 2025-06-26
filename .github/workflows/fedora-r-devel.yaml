@@ -37,7 +37,17 @@ jobs:
           R CMD build .
           PKG=$(ls -1t *.tar.gz | head -n 1)
           R CMD check --as-cran --no-stop-on-test-error "$PKG"
-
+          
+      - name: Upload artifacts
+        if: always()                          # run even on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: libdeflate-gcc-${{ github.run_id }}
+          path: |
+            *.tar.gz
+            *.Rcheck/**
+            */00*.out
+            */00*.log
 # -------------------------------------------------------------------
   clang-fedora:
     name: "Fedora 42 • R-devel • Clang 20"
@@ -58,3 +68,14 @@ jobs:
           R CMD build .
           PKG=$(ls -1t *.tar.gz | head -n 1)
           R CMD check --as-cran --no-stop-on-test-error "$PKG"
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libdeflate-clang-${{ github.run_id }}
+          path: |
+            *.tar.gz
+            *.Rcheck/**
+            */00*.out
+            */00*.log
