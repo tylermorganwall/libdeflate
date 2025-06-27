@@ -31,7 +31,23 @@ jobs:
 
       - name: Install build tools
         run: |
-          dnf -y install cmake make git libdeflate-devel
+          dnf -y install cmake make git
+      
+      - name: Install libdeflate 1.24 from source
+        run: |
+          dnf -y install curl tar gcc make cmake
+          curl -L -o libdeflate-1.24.tar.gz \
+            https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.24.tar.gz
+          tar -xf libdeflate-1.24.tar.gz
+          cmake -B libdeflate-1.24/build libdeflate-1.24 \
+            -DCMAKE_INSTALL_PREFIX=/usr/local \
+            -DBUILD_SHARED_LIBS=ON \
+            -DLIBDEFLATE_BUILD_STATIC_LIB=ON \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+          cmake --build  libdeflate-1.24/build --config Release -j"$(nproc)"
+          cmake --install libdeflate-1.24/build --config Release
+          ldconfig  # refresh linker cache
+
           
       - name: Put /opt/R-devel/bin on PATH
         run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
@@ -66,7 +82,22 @@ jobs:
 
       - name: Install build tools
         run: |
-          dnf -y install cmake make git libdeflate-devel
+          dnf -y install cmake make git
+
+      - name: Install libdeflate 1.24 from source
+        run: |
+          dnf -y install curl tar gcc make cmake
+          curl -L -o libdeflate-1.24.tar.gz \
+            https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.24.tar.gz
+          tar -xf libdeflate-1.24.tar.gz
+          cmake -B libdeflate-1.24/build libdeflate-1.24 \
+            -DCMAKE_INSTALL_PREFIX=/usr/local \
+            -DBUILD_SHARED_LIBS=ON \
+            -DLIBDEFLATE_BUILD_STATIC_LIB=ON \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+          cmake --build  libdeflate-1.24/build --config Release -j"$(nproc)"
+          cmake --install libdeflate-1.24/build --config Release
+          ldconfig  # refresh linker cache
 
       - name: Put /opt/R-devel/bin on PATH
         run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
