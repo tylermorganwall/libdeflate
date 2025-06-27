@@ -31,7 +31,7 @@ jobs:
 
       - name: Install build tools
         run: |
-          dnf -y install cmake make git
+          dnf -y install cmake make git libdeflate-devel
           
       - name: Put /opt/R-devel/bin on PATH
         run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
@@ -66,7 +66,7 @@ jobs:
 
       - name: Install build tools
         run: |
-          dnf -y install cmake make git
+          dnf -y install cmake make git libdeflate-devel
 
       - name: Put /opt/R-devel/bin on PATH
         run: echo "/opt/R-devel/bin" >> "$GITHUB_PATH"
