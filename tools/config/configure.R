@@ -43,6 +43,43 @@ LIB_INCLUDE_ASSIGN = ""
 LIB_LINK_ASSIGN = ""
 
 if (nzchar(pkgconfig_path)) {
+	# Let's list out all the available static library flags/paths during configuration,
+	# as this should make it easier to debug these issues in the future.
+	message("*** start of pkg-config inventory")
+
+	mods = strsplit(
+		system2(pkgconfig_path, "--list-all", stdout = TRUE),
+		"\\s+"
+	) |>
+		vapply(`[`, character(1), 1L) |>
+		sort()
+
+	dump_one = function(m) {
+		cf = tryCatch(
+			system2(pkgconfig_path, c("--cflags", m), stdout = TRUE),
+			error = \(e) ""
+		)
+		ld = tryCatch(
+			system2(pkgconfig_path, c("--libs", m), stdout = TRUE),
+			error = \(e) ""
+		)
+		lds = tryCatch(
+			system2(pkgconfig_path, c("--static", "--libs", m), stdout = TRUE),
+			error = \(e) ""
+		)
+
+		collapse = \(x) trimws(paste(x, collapse = " "))
+		cat(sprintf(
+			" - %-30s | %s | %s | %s\n",
+			m,
+			collapse(cf),
+			collapse(ld),
+			collapse(lds)
+		))
+	}
+
+	lapply(mods, dump_one)
+	message("*** end of pkg-config inventory")
 	pc_status = system2(
 		pkgconfig_path,
 		c("--exists", sprintf("'%s >= %s'", package_name, package_version)),
@@ -120,7 +157,11 @@ if (nzchar(pkgconfig_path)) {
 		if (nzchar(lib_link)) {
 			LIB_LINK_ASSIGN = sprintf('LIB_LINK = %s', lib_link) #This should already have -L
 		}
+	} else {
+		message(sprintf("*** %s not found by pkg-config", package_name))
 	}
+} else {
+	message("*** pkg-config not available, skipping to common locations")
 }
 
 if (!lib_exists) {
@@ -189,6 +230,8 @@ if (!lib_exists) {
 			break
 		}
 	}
+} else {
+	message(sprintf("*** %s not found in common library locations", package_name))
 }
 
 REASON_FOR_BUILDING = r"{"==> Building bundled libdeflate for linking and downstream packages that build and link bundled static libraries that use CMake"}"
