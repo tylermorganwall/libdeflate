@@ -43,43 +43,65 @@ LIB_INCLUDE_ASSIGN = ""
 LIB_LINK_ASSIGN = ""
 
 if (nzchar(pkgconfig_path)) {
-	# Let's list out all the available static library flags/paths during configuration,
-	# as this should make it easier to debug these issues in the future.
-	message("*** start of pkg-config inventory")
+	## Let's collect out all the available static library flags/paths during
+	## during configuration, as this should make it easier to debug these
+	## issues in the future.
 
-	mods = strsplit(
-		system2(pkgconfig_path, "--list-all", stdout = TRUE),
-		"\\s+"
-	) |>
-		vapply(`[`, character(1), 1L) |>
-		sort()
+	## ---------------------------------------------------------------
+	##  Collect pkg-config information  ->  inst/extdata/pkgcfg_db.rds
+	## ---------------------------------------------------------------
 
-	dump_one = function(m) {
-		cf = tryCatch(
-			system2(pkgconfig_path, c("--cflags", m), stdout = TRUE),
+	collapse = function(x) trimws(paste(x, collapse = " "))
+
+	grab = function(mod, flag) {
+		tryCatch(
+			suppressWarnings(
+				collapse(system2(
+					pkgconfig_path,
+					c(flag, mod),
+					stdout = TRUE,
+					stderr = FALSE
+				))
+			),
 			error = \(e) ""
 		)
-		ld = tryCatch(
-			system2(pkgconfig_path, c("--libs", m), stdout = TRUE),
-			error = \(e) ""
-		)
-		lds = tryCatch(
-			system2(pkgconfig_path, c("--static", "--libs", m), stdout = TRUE),
-			error = \(e) ""
-		)
-
-		collapse = \(x) trimws(paste(x, collapse = " "))
-		cat(sprintf(
-			" - %-30s | %s | %s | %s\n",
-			m,
-			collapse(cf),
-			collapse(ld),
-			collapse(lds)
-		))
 	}
 
-	lapply(mods, dump_one)
-	message("*** end of pkg-config inventory")
+	mods = strsplit(
+		system2(pkgconfig_path, "--list-all", stdout = TRUE, stderr = FALSE),
+		"\\s+"
+	) |>
+		vapply(\(x) x[1L], "") |>
+		sort()
+
+	db = do.call(
+		rbind,
+		lapply(mods, \(m) {
+			data.frame(
+				module = m,
+				cflags = grab(m, "--cflags"),
+				libs = grab(m, "--libs"),
+				static_libs = grab(m, c("--static", "--libs")),
+				stringsAsFactors = FALSE
+			)
+		})
+	)
+
+	out = file.path(
+		Sys.getenv("R_PACKAGE_DIR"),
+		"inst",
+		"extdata",
+		"pkgcfg_db.rds"
+	)
+	dir.create(dirname(out), showWarnings = FALSE, recursive = TRUE)
+	saveRDS(db, out, version = 3)
+
+	message(sprintf(
+		"*** wrote pkg-config database (%d rows) to %s",
+		nrow(db),
+		out
+	))
+
 	pc_status = system2(
 		pkgconfig_path,
 		c("--exists", sprintf("'%s >= %s'", package_name, package_version)),
