@@ -89,7 +89,6 @@ if (nzchar(pkgconfig_path)) {
 
 	out = file.path(
 		Sys.getenv("R_PACKAGE_DIR"),
-		"inst",
 		"extdata",
 		"pkgcfg_db.rds"
 	)
