@@ -60,26 +60,40 @@ if (nzchar(pkgconfig_path)) {
 			)
 		)
 		quote_paths = function(pkgconfig_output, prefix = "-I") {
-			paste(
-				paste0(
-					prefix,
-					vapply(
-						strsplit(
-							trimws(gsub(prefix, "", pkgconfig_output, fixed = TRUE)),
-							"\\s+"
-						)[[1]],
-						shQuote,
-						"character"
-					)
-				),
-				collapse = " "
+			include_dirs = strsplit(
+				trimws(gsub(prefix, "", pkgconfig_output, fixed = TRUE)),
+				"\\s+"
+			)[[1]]
+
+			if (length(include_dirs) == 1) {
+				if (include_dirs == "") {
+					return("")
+				}
+			}
+
+			return(
+				paste(
+					paste0(
+						prefix,
+						vapply(
+							include_dirs,
+							shQuote,
+							"character"
+						)
+					),
+					collapse = " "
+				)
 			)
 		}
-		lib_include = quote_paths(system2(
-			pkgconfig_path,
-			c("--cflags", package_name),
-			stdout = TRUE
-		))
+
+		lib_include = quote_paths(
+			system2(
+				pkgconfig_path,
+				c("--cflags", package_name),
+				stdout = TRUE
+			),
+			prefix = "-I"
+		)
 
 		message(
 			sprintf("*** configure: using include path '%s'", lib_include)
@@ -100,9 +114,12 @@ if (nzchar(pkgconfig_path)) {
 				lib_link
 			)
 		)
-
-		LIB_INCLUDE_ASSIGN = sprintf('LIB_INCLUDE = %s', lib_include) #This should already have -I
-		LIB_LINK_ASSIGN = sprintf('LIB_LINK = %s', lib_link) #This should already have -L
+		if (nzchar(lib_include)) {
+			LIB_INCLUDE_ASSIGN = sprintf('LIB_INCLUDE = %s', lib_include) #This should already have -I
+		}
+		if (nzchar(lib_link)) {
+			LIB_LINK_ASSIGN = sprintf('LIB_LINK = %s', lib_link) #This should already have -L
+		}
 	}
 }
 
@@ -163,8 +180,12 @@ if (!lib_exists) {
 				prefix,
 				"include"
 			)
-			LIB_INCLUDE_ASSIGN = sprintf('LIB_INCLUDE = -I"%s"', lib_include) #This doesn't have -I yet
-			LIB_LINK_ASSIGN = sprintf('LIB_LINK = -L"%s"', lib_link) #This doesn't have -L yet
+			if (nzchar(lib_include)) {
+				LIB_INCLUDE_ASSIGN = sprintf('LIB_INCLUDE = -I"%s"', lib_include) #This doesn't have -I yet
+			}
+			if (nzchar(lib_link)) {
+				LIB_LINK_ASSIGN = sprintf('LIB_LINK = -L"%s"', lib_link) #This doesn't have -L yet
+			}
 			break
 		}
 	}
