@@ -11,7 +11,7 @@ pkgcfg_db = local({
 			path = system.file(
 				"extdata",
 				"pkgcfg_db.rds",
-				package = utils::packageName()
+				package = "libdeflate"
 			)
 			cache <<- if (file.exists(path)) readRDS(path) else data.frame()
 		}
