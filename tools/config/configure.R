@@ -43,7 +43,7 @@ LIB_INCLUDE_ASSIGN = ""
 LIB_LINK_ASSIGN = ""
 
 if (nzchar(pkgconfig_path)) {
-	## Let's collect out all the available static library flags/paths during
+	## Let's collect out all the available static library flags/paths
 	## during configuration, as this should make it easier to debug these
 	## issues in the future.
 
@@ -123,10 +123,11 @@ if (nzchar(pkgconfig_path)) {
 				"\\s+"
 			)[[1]]
 
-			if (length(include_dirs) == 1) {
-				if (include_dirs == "") {
-					return("")
-				}
+			if (length(include_dirs) == 0) {
+				return("")
+			}
+			if (length(include_dirs) == 1 && include_dirs == "") {
+				return("")
 			}
 
 			return(

@@ -1,7 +1,7 @@
 Package: libdeflate
 Type: Package
 Title: DEFLATE Compression and Static Library 
-Version: 1.24-4
+Version: 1.24-5
 Authors@R: 
     c(
       person(
