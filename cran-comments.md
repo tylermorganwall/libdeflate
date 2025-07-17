@@ -1,3 +1,26 @@
+## Fixes v1.24-7
+
+This version updates the configuration step to be more robust against malformed pkg-config output. Specifically, this update explicitly checks for the existence of the static library libdeflate.a in the directories passed from `pkg-config --libs-only-L libdeflate`, and only links to the existing system library if found in that location. 
+
+### Check Results 
+Checked on win-builder old/rel/devel + mac-builder rel/devel + 30 r-hub runners
+
+0 Errors | 0 Warnings | 1 NOTE
+
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: 'Tyler Morgan-Wall <tylermw@gmail.com>'
+
+New submission
+
+Package was archived on CRAN
+
+CRAN repository db overrides:
+  X-CRAN-Comment: Archived on 2025-07-02 for repeated policy violation.
+
+  Still not cross-platform portable code despite multiple
+    re-submissions.
+
+
 ## Fixes v1.24-2
 
 This version fixes the issues with compiling on the CRAN 'blackswan' test environment, which resulted from failing to account for that build environment's use of aliases/symlinks to pass in the compiler cache tool 'ccache'. The prior version checked for 'ccache', but failed in the case where 'ccache' use was not explicit (as it called 'normalizePath()' after finding the compiler, which expanded the symlink):
