@@ -92,7 +92,7 @@ if (nzchar(pkgconfig_path)) {
 		check_existence = function(lib_link_output, static_lib_filename) {
 			any(file.exists(file.path(
 				gsub(
-					pattern = "(-L)|(')",
+					pattern = "(-L)|('|\")",
 					"",
 					x = unlist(strsplit(
 						lib_link_output,
@@ -121,31 +121,35 @@ if (nzchar(pkgconfig_path)) {
 			prefix = "-L"
 		)
 
-		if (
-			nzchar(lib_include) &&
-				check_existence(lib_link, static_lib_filename)
-		) {
-			message(
-				sprintf("*** configure: using include path '%s'", lib_include)
-			)
-			LIB_INCLUDE_ASSIGN = sprintf('LIB_INCLUDE = %s', lib_include) #This should already have -I
-		} else {
+		if (!check_existence(lib_link, static_lib_filename)) {
 			lib_exists = FALSE
-		}
-		if (nzchar(lib_link)) {
-			message(
-				sprintf(
-					"*** configure: using link path '%s'",
-					lib_link
+		} else {
+			if (nzchar(lib_include)) {
+				message(
+					sprintf(
+						"*** configure: using include path '%s'",
+						lib_include
+					)
 				)
-			)
-			LIB_LINK_ASSIGN = sprintf('LIB_LINK = %s', lib_link) #This should already have -L
-		} else {
-			message(sprintf(
-				"*** %s found by pkg-config, but returned no link directory--skipping",
-				package_name
-			))
-			lib_exists = FALSE
+				LIB_INCLUDE_ASSIGN = sprintf('LIB_INCLUDE = %s', lib_include) #This should already have -I
+			} else {
+				lib_exists = FALSE
+			}
+			if (nzchar(lib_link)) {
+				message(
+					sprintf(
+						"*** configure: using link path '%s'",
+						lib_link
+					)
+				)
+				LIB_LINK_ASSIGN = sprintf('LIB_LINK = %s', lib_link) #This should already have -L
+			} else {
+				message(sprintf(
+					"*** %s found by pkg-config, but returned no link directory--skipping",
+					package_name
+				))
+				lib_exists = FALSE
+			}
 		}
 	} else {
 		message(sprintf("*** %s not found by pkg-config", package_name))
