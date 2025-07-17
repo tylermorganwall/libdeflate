@@ -34,6 +34,7 @@ if (syswhich_cmake != "") {
 #Use pkg-config (if available) to find a system library
 LIB_SYSTEM = ""
 package_name = "libdeflate"
+static_lib_filename = sprintf("%s.a", package_name)
 package_version = "1.24"
 
 pkgconfig_path = Sys.which("pkg-config")
@@ -88,6 +89,20 @@ if (nzchar(pkgconfig_path)) {
 			)
 		}
 
+		check_existence = function(lib_link_output, static_lib_filename) {
+			any(file.exists(file.path(
+				gsub(
+					pattern = "(-L)|(')",
+					"",
+					x = unlist(strsplit(
+						lib_link_output,
+						split = " "
+					))
+				),
+				static_lib_filename
+			)))
+		}
+
 		lib_include = quote_paths(
 			system2(
 				pkgconfig_path,
@@ -106,7 +121,10 @@ if (nzchar(pkgconfig_path)) {
 			prefix = "-L"
 		)
 
-		if (nzchar(lib_include)) {
+		if (
+			nzchar(lib_include) &&
+				check_existence(lib_link, static_lib_filename)
+		) {
 			message(
 				sprintf("*** configure: using include path '%s'", lib_include)
 			)
@@ -133,82 +151,7 @@ if (nzchar(pkgconfig_path)) {
 		message(sprintf("*** %s not found by pkg-config", package_name))
 	}
 } else {
-	message("*** pkg-config not available, skipping to common locations")
-}
-
-if (!lib_exists) {
-	message(
-		sprintf(
-			"*** configure: checking for %s in common library locations",
-			package_name
-		)
-	)
-	fallback_prefixes = c(
-		"/opt/R/arm64",
-		"/opt/R/x86_64",
-		"/opt/homebrew",
-		"/usr/local",
-		"/usr"
-	)
-
-	for (prefix in fallback_prefixes) {
-		lib_exists_check = file.exists(file.path(
-			prefix,
-			"lib",
-			sprintf("%s.a", package_name)
-		))
-		header_exists = file.exists(file.path(
-			prefix,
-			"include",
-			"libdeflate.h"
-		))
-		if (header_exists) {
-			header_lines = readLines(file.path(
-				prefix,
-				"include",
-				"libdeflate.h"
-			))
-			major_version_line = grepl("LIBDEFLATE_VERSION_MAJOR", header_lines)
-			minor_version_line = grepl("LIBDEFLATE_VERSION_MINOR", header_lines)
-			stopifnot(sum(major_version_line) == 1)
-			stopifnot(sum(minor_version_line) == 1)
-			major_version = as.integer(strsplit(
-				header_lines[major_version_line],
-				"\\s+"
-			)[[1]][3])
-			minor_version = as.integer(strsplit(
-				header_lines[minor_version_line],
-				"\\s+"
-			)[[1]][3])
-			if (major_version > 1 || minor_version < 24) {
-				message(sprintf(
-					"System install of libdeflate v%i.%i found, but is not of a suitable version (>= v1.24) ",
-					major_version,
-					minor_version
-				))
-				header_exists = FALSE
-			}
-		}
-		if (lib_exists_check && header_exists) {
-			lib_exists = TRUE
-			lib_link = file.path(
-				prefix,
-				"lib"
-			)
-			lib_include = file.path(
-				prefix,
-				"include"
-			)
-			if (nzchar(lib_include)) {
-				LIB_INCLUDE_ASSIGN = sprintf('LIB_INCLUDE = -I"%s"', lib_include) #This doesn't have -I yet
-			}
-			if (nzchar(lib_link)) {
-				LIB_LINK_ASSIGN = sprintf('LIB_LINK = -L"%s"', lib_link) #This doesn't have -L yet
-			}
-			break
-		}
-	}
-	message(sprintf("*** %s not found in common library locations", package_name))
+	message("*** pkg-config not available, using bundled libdeflate")
 }
 
 REASON_FOR_BUILDING = r"{"==> Building bundled libdeflate for linking and downstream packages that build and link bundled static libraries that use CMake"}"
