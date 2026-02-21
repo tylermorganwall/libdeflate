@@ -32,19 +32,18 @@ $(OBJECTS): $(LIBDEFLATE_LIB)
 
 $(LIBDEFLATE_LIB):
 	@echo @REASON_FOR_BUILDING@
-	cd @PACKAGE_BASE_DIR@/src/libdeflate/build && \
+	cd @PACKAGE_BASE_DIR@/src/libdeflate/build-cran && \
 	@CMAKE@ --build . --config Release && \
 	@CMAKE@ --install . --config Release && \
 	cd @PACKAGE_BASE_DIR@ && \
 	"$(R_HOME)/bin/Rscript" tools/fix-line-endings.R src/Makevars \
-		src/libdeflate/build/Makefile && \
+		src/libdeflate/build-cran/Makefile && \
 	"$(R_HOME)/bin/Rscript" tools/fix-targets.R \
 	inst/lib/@TARGET_ARCH@/cmake/libdeflate/libdeflate-targets.cmake
 
 clean:
-	rm -rf @PACKAGE_BASE_DIR@/src/libdeflate/build && \
-	rm -rf @PACKAGE_BASE_DIR@/src/Makevars && \
-	rm -rf @PACKAGE_BASE_DIR@/src/Makevars.win && \
+	rm -rf @PACKAGE_BASE_DIR@/src/libdeflate/build-cran && \
+	rm -rf @PACKAGE_BASE_DIR@/src/libdeflate/cache && \
 	rm -rf @PACKAGE_BASE_DIR@/config.log && \
 	rm -rf @PACKAGE_BASE_DIR@/config.status && \
 	rm -rf @PACKAGE_BASE_DIR@/autom4te.cache && \

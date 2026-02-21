@@ -181,73 +181,11 @@ define(
 	REASON_FOR_BUILDING = REASON_FOR_BUILDING
 )
 
-# Everything below here is package specific
-
-if (!dir.exists("src/libdeflate/build")) {
-	dir.create("src/libdeflate/build")
-}
-
-file_cache = "src/libdeflate/build/initial-cache.cmake"
-writeLines(
-	sprintf(
-		r"-{set(CMAKE_C_FLAGS "-fPIC -fvisibility=hidden" CACHE STRING "C flags")
-  set(CMAKE_CXX_FLAGS "-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" CACHE STRING "C++ flags")
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Position independent code")
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type")
-  set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs")
-  set(CMAKE_OSX_ARCHITECTURES "%s" CACHE STRING "Target architecture")}-",
-		TARGET_ARCH
-	),
-	file_cache
-)
-
-inst_dir = file.path(PACKAGE_BASE_DIR, "inst") # ${PACKAGE_BASE_DIR}/inst
-dir.create(inst_dir, recursive = TRUE, showWarnings = FALSE)
-
-include_dir = file.path(inst_dir, "include")
-if (!dir.exists(include_dir)) {
-	dir.create(include_dir)
-}
-lib_dir = file.path(inst_dir, "lib")
-if (!dir.exists(lib_dir)) {
-	dir.create(lib_dir)
-}
-lib_arch = file.path(lib_dir, TARGET_ARCH)
-
-if (!dir.exists(lib_arch)) {
-	dir.create(lib_arch)
-}
-
-build_dir = file.path(PACKAGE_BASE_DIR, "src/libdeflate/build") # already created earlier
-src_dir = ".." # evaluated inside build/
-
-cmake_cfg = c(
-	src_dir,
-	"-C",
-	"../build/initial-cache.cmake",
-	"-DCMAKE_INSTALL_PREFIX=\"../../../inst\"",
-	paste0("-DCMAKE_INSTALL_LIBDIR=lib/", TARGET_ARCH),
-	"-DCMAKE_INSTALL_INCLUDEDIR=include",
-	"-DLIBDEFLATE_BUILD_GZIP=OFF",
-	"-DLIBDEFLATE_BUILD_SHARED_LIB=OFF",
-	"-DCMAKE_BUILD_TYPE=Release",
-	"-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
-)
-
-setwd(build_dir)
-
-status = system2(CMAKE, cmake_cfg)
-if (status != 0) {
-	stop("CMake configure step failed")
-}
-
-setwd(PACKAGE_BASE_DIR)
-
 lf_ify = function(path) {
 	if (!file.exists(path)) {
 		return(invisible())
 	}
-	txt = readLines(path, warn = FALSE) # strips CR automatically
+	txt = readLines(path, warn = FALSE)
 	writeLines(txt, path, sep = "\n", useBytes = TRUE)
 }
 
@@ -256,6 +194,60 @@ if (!is_windows) {
 } else {
 	configure_file("src/Makevars.win.in")
 }
-
 lf_ify("src/Makevars")
 lf_ify("src/Makevars.win")
+
+# ---- Build and install static lib ----
+
+cache_dir = file.path(PACKAGE_BASE_DIR, "src/libdeflate/cache")
+dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+file_cache = file.path(cache_dir, "initial-cache.cmake")
+
+cache_lines = c(
+	'set(CMAKE_C_FLAGS "-fPIC -fvisibility=hidden" CACHE STRING "C flags")',
+	'set(CMAKE_CXX_FLAGS "-fPIC -fvisibility=hidden -fvisibility-inlines-hidden" CACHE STRING "C++ flags")',
+	'set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Position independent code")',
+	'set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type")',
+	'set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs")'
+)
+if (is_macos) {
+	cache_lines = c(
+		cache_lines,
+		sprintf(
+			'set(CMAKE_OSX_ARCHITECTURES "%s" CACHE STRING "Target architecture")',
+			TARGET_ARCH
+		)
+	)
+}
+writeLines(cache_lines, file_cache)
+
+inst_dir = file.path(PACKAGE_BASE_DIR, "inst")
+dir.create(inst_dir, recursive = TRUE, showWarnings = FALSE)
+
+build_dir = file.path(PACKAGE_BASE_DIR, "src/libdeflate/build-cran")
+if (dir.exists(build_dir)) {
+	unlink(build_dir, recursive = TRUE, force = TRUE)
+}
+dir.create(build_dir, recursive = TRUE, showWarnings = FALSE)
+
+cmake_cfg = c(
+	"..",
+	"-C",
+	file_cache,
+	paste0("-DCMAKE_INSTALL_PREFIX=", inst_dir),
+	paste0("-DCMAKE_INSTALL_LIBDIR=lib/", TARGET_ARCH),
+	"-DCMAKE_INSTALL_INCLUDEDIR=include",
+	"-DLIBDEFLATE_BUILD_GZIP=OFF",
+	"-DLIBDEFLATE_BUILD_SHARED_LIB=OFF",
+	"-DCMAKE_BUILD_TYPE=Release",
+	"-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+)
+
+oldwd = getwd()
+setwd(build_dir)
+status = system2(CMAKE, cmake_cfg)
+setwd(oldwd)
+
+if (status != 0) {
+	stop("CMake configure step failed")
+}
